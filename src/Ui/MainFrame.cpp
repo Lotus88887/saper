@@ -65,7 +65,6 @@ void MainFrame::OnButtonClicked(wxCommandEvent& event) {
             if (cell.state == Board::Revealed) {
                 if (cell.mine) {
                     b->SetLabel("X");
-                    b->SetForegroundColour(*wxBLACK);
                 }
                 else if (cell.adjacent > 0) {
                     b->SetLabel(std::to_string(cell.adjacent));
@@ -73,12 +72,12 @@ void MainFrame::OnButtonClicked(wxCommandEvent& event) {
                     // Set font: bold, size 12, default family
                     wxFont font = b->GetFont();
                     font.SetWeight(wxFONTWEIGHT_BOLD);
-                    font.SetPointSize(12); // You can adjust the size
+                    font.SetPointSize(12);
                     b->SetFont(font);
                 }
                 else {
                     b->SetLabel("");
-                    b->SetForegroundColour(*wxRED);
+                    b->SetForegroundColour(wxNullColour);
                     wxFont font = b->GetFont();
                     font.SetWeight(wxFONTWEIGHT_NORMAL);
                     font.SetPointSize(10); // Default size
@@ -99,7 +98,7 @@ void MainFrame::OnButtonRightClick(wxMouseEvent& event) {
     wxButton* btn = dynamic_cast<wxButton*>(event.GetEventObject());
     if (btn) {
         wxMessageBox("Right button was clicked!");
-        // Możesz tutaj ustawić flagę, zmienić etykietę itp.
+        // Logika dodawania flagi tutaj
     }
 }
 
