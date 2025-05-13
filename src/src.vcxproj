@@ -135,7 +135,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+<<<<<<< Updated upstream:src/src.vcxproj
     <ClCompile Include="main.cpp" />
+=======
+    <ClCompile Include="src\App\App.cpp" />
+    <ClCompile Include="src\Core\Board.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Ui\MainFrame.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\App\App.h" />
+    <ClInclude Include="src\Core\Board.h" />
+    <ClInclude Include="src\Ui\BoardUI.h" />
+    <ClInclude Include="src\Ui\MainFrame.h" />
+>>>>>>> Stashed changes:src.vcxproj
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
