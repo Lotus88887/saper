@@ -42,9 +42,9 @@ private:
      */
     std::vector<wxButton*> buttons;
 
-    int rows = 9;
-    int cols = 9;
-    int mines = 10;
+    int rows = 2;
+    int cols = 2;
+    int mines = 2;
     
     /**
      * @brief Logika planszy gry Saper.

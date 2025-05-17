@@ -24,7 +24,7 @@ MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, "Minesweeper")
 {
     Centre();
 
-    wxGridSizer* gridSizer = CreateBoardUI(this, 9, 9, buttons);
+    wxGridSizer* gridSizer = CreateBoardUI(this, rows, cols, buttons);
 
     for (auto btn : buttons) {
         btn->Bind(wxEVT_BUTTON, &MainFrame::OnButtonClicked, this);
