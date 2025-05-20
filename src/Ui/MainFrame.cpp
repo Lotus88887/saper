@@ -1,6 +1,7 @@
 #include "MainFrame.h"
 #include "BoardUI.h"
 
+
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
 EVT_CLOSE(MainFrame::OnClose)
 
@@ -20,7 +21,7 @@ wxColour GetNumberColor(int number) {
     }
 }
 
-MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, "Minesweeper")
+MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, "Saper")
 {
     Centre();
 
@@ -51,7 +52,11 @@ void MainFrame::OnButtonClicked(wxCommandEvent& event) {
     int row = idx / cols, col = idx % cols;
 
     if (board.Reveal(row, col)) {
+        wxBitmap ICON_MINE("mine.png", wxBITMAP_TYPE_PNG);
+        btn->SetBitmap(ICON_MINE);
+
         wxMessageBox("Przegrałeś!", "Koniec gry");
+        
         board.Reset();
         ResetUI();
         return;

@@ -16,6 +16,11 @@ public:
      * @brief Konstruktor głównego okna i inicjalizacja siatki gry.
      */
     MainFrame();
+
+    int rows = 7;
+    int cols = 7;
+    int mines = 2;
+
 private:
     void ResetUI();
 
@@ -41,10 +46,6 @@ private:
      * @brief Przechowuje wskaźniki do wszystkich przycisków siatki.
      */
     std::vector<wxButton*> buttons;
-
-    int rows = 2;
-    int cols = 2;
-    int mines = 2;
     
     /**
      * @brief Logika planszy gry Saper.

@@ -64,7 +64,7 @@ void Board::PlaceMines(int safeRow, int safeCol) {
 void Board::CountAdjacents() {
     for (int r = 0; r < rows; ++r)
         for (int c = 0; c < cols; ++c) {
-            if (grid[r][c].mine) continue;
+            if (grid[r][c].mine) continue; // Pomiń liczenie dla pola z miną
             int count = 0;
             for (int dr = -1; dr <= 1; ++dr)
                 for (int dc = -1; dc <= 1; ++dc) {

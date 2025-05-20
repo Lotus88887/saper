@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BoardUI.cpp" />
     <ClCompile Include="src\App\App.cpp" />
     <ClCompile Include="src\Core\Board.cpp" />
     <ClCompile Include="src\main.cpp" />

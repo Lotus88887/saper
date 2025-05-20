@@ -11,6 +11,9 @@
     <ClCompile Include="src\Core\Board.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="BoardUI.cpp">
+      <Filter>Ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="App">
