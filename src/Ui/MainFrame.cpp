@@ -52,8 +52,11 @@ void MainFrame::OnButtonClicked(wxCommandEvent& event) {
     int row = idx / cols, col = idx % cols;
 
     if (board.Reveal(row, col)) {
-        wxBitmap ICON_MINE("mine.png", wxBITMAP_TYPE_PNG);
-        btn->SetBitmap(ICON_MINE);
+        wxFont font = btn->GetFont();
+        font.SetWeight(wxFONTWEIGHT_BOLD);
+        font.SetPointSize(12);
+        btn->SetFont(font);
+        btn->SetLabel("X");
 
         wxMessageBox("Przegrałeś!", "Koniec gry");
         
@@ -77,7 +80,7 @@ void MainFrame::OnButtonClicked(wxCommandEvent& event) {
                     // Set font: bold, size 12, default family
                     wxFont font = b->GetFont();
                     font.SetWeight(wxFONTWEIGHT_BOLD);
-                    font.SetPointSize(12);
+                    font.SetPointSize(10);
                     b->SetFont(font);
                 }
                 else {
@@ -102,8 +105,27 @@ void MainFrame::OnButtonClicked(wxCommandEvent& event) {
 void MainFrame::OnButtonRightClick(wxMouseEvent& event) {
     wxButton* btn = dynamic_cast<wxButton*>(event.GetEventObject());
     if (btn) {
-        wxMessageBox("Right button was clicked!");
-        // Logika dodawania flagi tutaj
+        //wxMessageBox("Right button was clicked!");
+        int idx = std::find(buttons.begin(), buttons.end(), btn) - buttons.begin();
+        int row = idx / cols, col = idx % cols;
+        board.ToggleFlag(row, col);
+
+        const auto& cell = board.GetCell(row, col);
+
+        if (cell.state == Board::CellState::Flagged) {
+            wxFont font = btn->GetFont();
+            font.SetWeight(wxFONTWEIGHT_BOLD);
+            font.SetPointSize(12);
+            btn->SetFont(font);
+            btn->SetLabel("F");
+        }
+        else if (cell.state == Board::CellState::Hidden) {
+            wxFont font = btn->GetFont();
+            font.SetWeight(wxFONTWEIGHT_BOLD);
+            font.SetPointSize(12);
+            btn->SetFont(font);
+            btn->SetLabel("");
+        }
     }
 }
 
