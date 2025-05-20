@@ -3,6 +3,7 @@
 
 wxIMPLEMENT_APP(MainApp);
 
+
 bool MainApp::OnInit()
 {
     MainFrame* frame = new MainFrame();

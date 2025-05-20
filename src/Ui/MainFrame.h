@@ -16,10 +16,11 @@ public:
      * @brief Konstruktor głównego okna i inicjalizacja siatki gry.
      */
     MainFrame();
+    
 
-    int rows = 7;
+    int rows = 5;
     int cols = 7;
-    int mines = 2;
+    int mines = 10;
 
 private:
     void ResetUI();
