@@ -18,8 +18,8 @@ public:
     MainFrame();
     
 
-    int rows = 5;
-    int cols = 7;
+    int rows = 9;
+    int cols = 9;
     int mines = 10;
 
 private:

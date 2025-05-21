@@ -76,7 +76,7 @@ void MainFrame::OnButtonClicked(wxCommandEvent& event) {
                 }
                 else if (cell.adjacent > 0) {
                     b->SetLabel(std::to_string(cell.adjacent));
-                    b->SetForegroundColour(GetNumberColor(cell.adjacent));
+                    //b->SetForegroundColour(GetNumberColor(cell.adjacent));
                     // Set font: bold, size 12, default family
                     wxFont font = b->GetFont();
                     font.SetWeight(wxFONTWEIGHT_BOLD);
@@ -85,7 +85,7 @@ void MainFrame::OnButtonClicked(wxCommandEvent& event) {
                 }
                 else {
                     b->SetLabel("");
-                    b->SetForegroundColour(wxNullColour);
+                    //b->SetForegroundColour(wxNullColour);
                     wxFont font = b->GetFont();
                     font.SetWeight(wxFONTWEIGHT_NORMAL);
                     font.SetPointSize(10); // Default size
