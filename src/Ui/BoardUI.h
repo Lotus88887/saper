@@ -12,7 +12,7 @@
  * @return Wskaźnik do utworzonego wxGridSizer.
  */
 inline wxGridSizer* CreateBoardUI(wxWindow* parent, int rows, int cols, std::vector<wxButton*>& buttons) {
-    wxGridSizer* gridSizer = new wxGridSizer(rows, cols, 2, 2);
+    wxGridSizer* gridSizer = new wxGridSizer(rows, cols, 0, 0);
     buttons.resize(rows * cols);
 
     for (int i = 0; i < rows; ++i) {

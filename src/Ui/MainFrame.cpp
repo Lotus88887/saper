@@ -117,7 +117,7 @@ void MainFrame::OnButtonRightClick(wxMouseEvent& event) {
             font.SetWeight(wxFONTWEIGHT_BOLD);
             font.SetPointSize(12);
             btn->SetFont(font);
-            btn->SetLabel("F");
+            btn->SetLabel("🚩");
         }
         else if (cell.state == Board::CellState::Hidden) {
             wxFont font = btn->GetFont();
