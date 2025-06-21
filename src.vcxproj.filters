@@ -36,5 +36,8 @@
     <ClInclude Include="src\Core\Board.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\Difficulty.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

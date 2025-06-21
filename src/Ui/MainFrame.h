@@ -2,6 +2,7 @@
 #include <wx/wx.h>
 #include <vector>
 #include "../Core/Board.h"
+#include "../Core/Difficulty.h" // Dodano dla obsługi poziomów trudności
 
 /**
  * @class MainFrame
@@ -61,6 +62,12 @@ private:
     void OnButtonRightClick(wxMouseEvent& event);
 
     /**
+     * @brief Obsługuje zmianę poziomu trudności przez użytkownika.
+     * @param event Obiekt zdarzenia wyboru z listy.
+     */
+    void OnDifficultyChanged(wxCommandEvent& event);
+
+    /**
      * @brief Przechowuje wskaźniki do wszystkich przycisków siatki.
      */
     std::vector<wxButton*> buttons;
@@ -94,7 +101,17 @@ private:
      * @brief Wyświetlacz czasu gry.
      */
     wxStaticText* m_timeCounter;
-    
+
+    /**
+     * @brief Lista wyboru poziomu trudności.
+     */
+    wxComboBox* m_difficultyCombo;
+
+    /**
+     * @brief Aktualny poziom trudności.
+     */
+    Difficulty m_difficulty = Difficulty::Easy;
+
     wxDECLARE_EVENT_TABLE();
 };
 
