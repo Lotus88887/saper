@@ -59,8 +59,8 @@ MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, L"Minesweeper", wxDefaultPositi
                          m_timer(nullptr), m_seconds(0), m_remainingMines(mines)
 {
     // Always use Polish formatting for C and C++ locale
-    setlocale(LC_ALL, "pl_PL.UTF-8");
-    std::locale::global(std::locale("pl_PL.UTF-8"));
+    setlocale(LC_ALL, "Polish_Poland.1250");
+    std::locale::global(std::locale("Polish_Poland.1250"));
 
     // Set Polish UTF-8 locale for proper Unicode and Polish support
     static wxLocale* locale = nullptr;
