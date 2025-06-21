@@ -98,8 +98,8 @@ MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, "Minesweeper", wxDefaultPositio
     wxBoxSizer* horizontalSizer = new wxBoxSizer(wxHORIZONTAL);
     horizontalSizer->AddSpacer(10); // Left padding
     
-    wxGridSizer* gridSizer = CreateBoardUI(this, rows, cols, buttons);
-    horizontalSizer->Add(gridSizer, 1, wxEXPAND);
+    m_gridSizer = CreateBoardUI(this, rows, cols, buttons);
+    horizontalSizer->Add(m_gridSizer, 1, wxEXPAND);
     horizontalSizer->AddSpacer(10); // Right padding
     
     mainSizer->Add(horizontalSizer, 1, wxEXPAND);
@@ -321,10 +321,51 @@ void MainFrame::OnDifficultyChanged(wxCommandEvent& event) {
         case 2: m_difficulty = Difficulty::Hard; break;
         default: m_difficulty = Difficulty::Easy; break;
     }
-    auto& settings = GetSettings(m_difficulty);
+    auto settings = GetSettings(m_difficulty);
     rows = settings.rows;
     cols = settings.cols;
     mines = settings.mines;
     board = Board(rows, cols, mines);
+
+    // Remove old buttons from UI
+    for (auto btn : buttons) {
+        btn->Destroy();
+    }
+    buttons.clear();
+
+    // Remove old sizer from the layout
+    if (m_gridSizer) {
+        m_gridSizer->Clear(true); // true = delete windows
+        m_gridSizer = nullptr;
+    }
+
+    // Create new board UI
+    m_gridSizer = CreateBoardUI(this, rows, cols, buttons);
+
+    // Find the horizontal sizer and replace the old grid sizer
+    wxBoxSizer* mainSizer = static_cast<wxBoxSizer*>(GetSizer());
+    wxBoxSizer* horizontalSizer = nullptr;
+    if (mainSizer) {
+        wxSizerItemList& items = mainSizer->GetChildren();
+        for (auto item : items) {
+            horizontalSizer = dynamic_cast<wxBoxSizer*>(item->GetSizer());
+            if (horizontalSizer) break;
+        }
+    }
+    if (horizontalSizer) {
+        horizontalSizer->Clear(false); // remove old grid sizer, don't delete children (already destroyed)
+        horizontalSizer->AddSpacer(10); // Left padding
+        horizontalSizer->Add(m_gridSizer, 1, wxEXPAND);
+        horizontalSizer->AddSpacer(10); // Right padding
+    }
+
+    // Re-bind events for new buttons
+    for (auto btn : buttons) {
+        btn->Bind(wxEVT_BUTTON, &MainFrame::OnButtonClicked, this);
+        btn->Bind(wxEVT_RIGHT_DOWN, &MainFrame::OnButtonRightClick, this);
+    }
+
+    Layout();
+	Fit();
     ResetUI();
 }

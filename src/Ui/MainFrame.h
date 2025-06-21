@@ -112,6 +112,11 @@ private:
      */
     Difficulty m_difficulty = Difficulty::Easy;
 
+    /**
+     * @brief Układ siatki dla przycisków.
+     */
+    wxGridSizer* m_gridSizer = nullptr;
+
     wxDECLARE_EVENT_TABLE();
 };
 
