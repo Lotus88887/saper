@@ -3,6 +3,9 @@
 #include <algorithm> // for std::min
 #include "../Core/Difficulty.h"
 #include <wx/strconv.h>
+#include <wx/font.h>
+#include <locale.h>
+#include <locale>
 
 // Timer event ID and Info Button ID
 const int ID_TIMER = 1001;
@@ -28,9 +31,37 @@ wxColour GetNumberColor(int number) {
     }
 }
 
+// Helper function to set a Unicode/emoji font with fallback using wxFontInfo
+wxFont GetEmojiFont(int size, int weight = wxFONTWEIGHT_BOLD) {
+    wxFontInfo info(size);
+    info.Family(wxFONTFAMILY_DEFAULT).Style(wxFONTSTYLE_NORMAL).Weight(weight);
+    // Try common emoji/Unicode fonts in order
+    const char* fontNames[] = {
+        "Segoe UI Emoji",        // Windows
+        "Noto Color Emoji",     // Linux
+        "Apple Color Emoji",    // macOS
+        "Arial Unicode MS",     // Windows fallback
+        "Segoe UI Symbol",      // Windows fallback
+        "Symbola"               // Linux/Windows fallback
+    };
+    for (const char* name : fontNames) {
+        info.FaceName(name);
+        wxFont font(info);
+        if (font.IsOk()) {
+            return font;
+        }
+    }
+    // Fallback to default
+    return wxFont(info);
+}
+
 MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, L"Minesweeper", wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE | wxCLIP_CHILDREN),
                          m_timer(nullptr), m_seconds(0), m_remainingMines(mines)
 {
+    // Always use Polish formatting for C and C++ locale
+    setlocale(LC_ALL, "pl_PL.UTF-8");
+    std::locale::global(std::locale("pl_PL.UTF-8"));
+
     // Set Polish UTF-8 locale for proper Unicode and Polish support
     static wxLocale* locale = nullptr;
     if (!locale) {
@@ -53,8 +84,7 @@ MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, L"Minesweeper", wxDefaultPositi
     wxBoxSizer* headerSizer = new wxBoxSizer(wxHORIZONTAL);
     
     // Mine counter
-    wxFont emojiFont(12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
-    emojiFont.SetFaceName("Segoe UI Emoji"); // Use a font with emoji/Polish support if available
+    wxFont emojiFont = GetEmojiFont(12);
     wxStaticText* mineLabel = new wxStaticText(headerPanel, wxID_ANY, L"💣 ");
     mineLabel->SetForegroundColour(wxColour(255, 255, 255));
     mineLabel->SetFont(emojiFont);
@@ -189,10 +219,7 @@ void MainFrame::OnButtonClicked(wxCommandEvent& event) {
     int row = idx / cols, col = idx % cols;
 
     if (board.Reveal(row, col)) {
-        wxFont font = btn->GetFont();
-        font.SetWeight(wxFONTWEIGHT_BOLD);
-        font.SetPointSize(12);
-        font.SetFaceName("Segoe UI Emoji");
+        wxFont font = GetEmojiFont(12);
         btn->SetFont(font);
         btn->SetLabel(L"💣");
         btn->SetForegroundColour(wxColour(244, 67, 54)); // Modern Red for mine
@@ -219,8 +246,7 @@ void MainFrame::OnButtonClicked(wxCommandEvent& event) {
             wxButton* b = buttons[r * cols + c];
             if (cell.state == Board::Revealed) {
                 if (cell.mine) {
-                    wxFont font = b->GetFont();
-                    font.SetFaceName("Segoe UI Emoji");
+                    wxFont font = GetEmojiFont(12);
                     b->SetFont(font);
                     b->SetLabel(L"💣");
                     b->SetForegroundColour(wxColour(244, 67, 54)); // Modern Red for mine
@@ -229,17 +255,15 @@ void MainFrame::OnButtonClicked(wxCommandEvent& event) {
                     b->SetLabel(std::to_wstring(cell.adjacent));
                     b->SetForegroundColour(GetNumberColor(cell.adjacent));
                     // Set font: bold, size 11, default family for better readability
-                    wxFont font = b->GetFont();
+                    wxFont font = GetEmojiFont(11);
                     font.SetWeight(wxFONTWEIGHT_BOLD);
-                    font.SetPointSize(11);
                     b->SetFont(font);
                 }
                 else {
                     b->SetLabel(L"");
                     b->SetForegroundColour(wxNullColour);
-                    wxFont font = b->GetFont();
+                    wxFont font = GetEmojiFont(10);
                     font.SetWeight(wxFONTWEIGHT_NORMAL);
-                    font.SetPointSize(10);
                     b->SetFont(font);
                 }
                 
@@ -272,10 +296,7 @@ void MainFrame::OnButtonRightClick(wxMouseEvent& event) {
         const auto& cell = board.GetCell(row, col);
 
         if (cell.state == Board::CellState::Flagged) {
-            wxFont font = btn->GetFont();
-            font.SetWeight(wxFONTWEIGHT_BOLD);
-            font.SetPointSize(12);
-            font.SetFaceName("Segoe UI Emoji");
+            wxFont font = GetEmojiFont(12);
             btn->SetFont(font);
             btn->SetLabel(L"🚩");
             btn->SetForegroundColour(wxColour(244, 67, 54)); // Modern Red for flag
@@ -283,10 +304,8 @@ void MainFrame::OnButtonRightClick(wxMouseEvent& event) {
             btn->SetBackgroundColour(wxColour(240, 240, 240));
         }
         else if (cell.state == Board::CellState::Hidden) {
-            wxFont font = btn->GetFont();
+            wxFont font = GetEmojiFont(12);
             font.SetWeight(wxFONTWEIGHT_BOLD);
-            font.SetPointSize(12);
-            font.SetFaceName("");
             btn->SetFont(font);
             btn->SetLabel(L"");
             btn->SetForegroundColour(wxNullColour);
@@ -306,11 +325,8 @@ void MainFrame::ResetUI() {
         btn->SetBackgroundColour(wxColour(220, 220, 220));
         btn->SetForegroundColour(wxNullColour);
         // Modern font
-        wxFont font = btn->GetFont();
+        wxFont font = GetEmojiFont(10);
         font.SetWeight(wxFONTWEIGHT_NORMAL);
-        font.SetPointSize(10);
-        font.SetFamily(wxFONTFAMILY_DEFAULT);
-        font.SetFaceName("Segoe UI Emoji");
         btn->SetFont(font);
         
         // Re-bind events
