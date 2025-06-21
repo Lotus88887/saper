@@ -24,6 +24,23 @@ public:
 
 private:
     void ResetUI();
+    
+    /**
+     * @brief Aktualizuje licznik min.
+     */
+    void UpdateMineCounter();
+    
+    /**
+     * @brief Obsługuje zdarzenie timera.
+     * @param event Obiekt zdarzenia timera.
+     */
+    void OnTimer(wxTimerEvent& event);
+    
+    /**
+     * @brief Obsługuje kliknięcie przycisku informacji.
+     * @param event Obiekt zdarzenia kliknięcia.
+     */
+    void OnInfoButtonClicked(wxCommandEvent& event);
 
     /**
      * @brief Obsługuje zdarzenie zamknięcia głównego okna.
@@ -52,6 +69,31 @@ private:
      * @brief Logika planszy gry Saper.
      */
     Board board{ rows, cols, mines };
+    
+    /**
+     * @brief Timer odliczający czas gry.
+     */
+    wxTimer* m_timer;
+    
+    /**
+     * @brief Licznik upłyniętych sekund.
+     */
+    int m_seconds;
+    
+    /**
+     * @brief Liczba pozostałych min (całkowita liczba min - liczba flag).
+     */
+    int m_remainingMines;
+    
+    /**
+     * @brief Wyświetlacz liczby pozostałych min.
+     */
+    wxStaticText* m_mineCounter;
+    
+    /**
+     * @brief Wyświetlacz czasu gry.
+     */
+    wxStaticText* m_timeCounter;
     
     wxDECLARE_EVENT_TABLE();
 };
