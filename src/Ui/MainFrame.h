@@ -117,6 +117,11 @@ private:
      */
     wxGridSizer* m_gridSizer = nullptr;
 
+    /**
+     * @brief Układ poziomy dla elementów interfejsu.
+     */
+    wxBoxSizer* m_horizontalSizer = nullptr;
+
     wxDECLARE_EVENT_TABLE();
 };
 

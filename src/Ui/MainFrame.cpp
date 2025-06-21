@@ -95,14 +95,14 @@ MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, "Minesweeper", wxDefaultPositio
     mainSizer->AddSpacer(5);
     
     // Continue with existing grid setup
-    wxBoxSizer* horizontalSizer = new wxBoxSizer(wxHORIZONTAL);
-    horizontalSizer->AddSpacer(10); // Left padding
+    m_horizontalSizer = new wxBoxSizer(wxHORIZONTAL);
+    m_horizontalSizer->AddSpacer(10); // Left padding
     
     m_gridSizer = CreateBoardUI(this, rows, cols, buttons);
-    horizontalSizer->Add(m_gridSizer, 1, wxEXPAND);
-    horizontalSizer->AddSpacer(10); // Right padding
+    m_horizontalSizer->Add(m_gridSizer, 1, wxEXPAND);
+    m_horizontalSizer->AddSpacer(10); // Right padding
     
-    mainSizer->Add(horizontalSizer, 1, wxEXPAND);
+    mainSizer->Add(m_horizontalSizer, 1, wxEXPAND);
     mainSizer->AddSpacer(10); // Bottom padding
 
     for (auto btn : buttons) {
@@ -316,10 +316,10 @@ void MainFrame::ResetUI() {
 void MainFrame::OnDifficultyChanged(wxCommandEvent& event) {
     int sel = m_difficultyCombo->GetSelection();
     switch (sel) {
-        case 0: m_difficulty = Difficulty::Easy; break;
-        case 1: m_difficulty = Difficulty::Medium; break;
-        case 2: m_difficulty = Difficulty::Hard; break;
-        default: m_difficulty = Difficulty::Easy; break;
+    case 0: m_difficulty = Difficulty::Easy; break;
+    case 1: m_difficulty = Difficulty::Medium; break;
+    case 2: m_difficulty = Difficulty::Hard; break;
+    default: m_difficulty = Difficulty::Easy; break;
     }
     auto settings = GetSettings(m_difficulty);
     rows = settings.rows;
@@ -336,13 +336,13 @@ void MainFrame::OnDifficultyChanged(wxCommandEvent& event) {
     // Remove old sizer from the layout
     if (m_gridSizer) {
         m_gridSizer->Clear(true); // true = delete windows
-        m_gridSizer = nullptr;
+        // Do not set m_gridSizer to nullptr yet, we will reuse the pointer
     }
 
     // Create new board UI
     m_gridSizer = CreateBoardUI(this, rows, cols, buttons);
 
-    // Initialize the horizontal sizer reference if not already set
+    // If m_horizontalSizer is not set, find and store it
     if (!m_horizontalSizer) {
         wxBoxSizer* mainSizer = static_cast<wxBoxSizer*>(GetSizer());
         if (mainSizer) {
@@ -351,12 +351,24 @@ void MainFrame::OnDifficultyChanged(wxCommandEvent& event) {
                 m_horizontalSizer = dynamic_cast<wxBoxSizer*>(item->GetSizer());
                 if (m_horizontalSizer) break;
             }
+        }
+    }
+
+    // Remove all items from horizontal sizer and re-add paddings and grid
+    if (m_horizontalSizer) {
         m_horizontalSizer->Clear(false); // remove old grid sizer, don't delete children (already destroyed)
         m_horizontalSizer->AddSpacer(10); // Left padding
         m_horizontalSizer->Add(m_gridSizer, 1, wxEXPAND);
         m_horizontalSizer->AddSpacer(10); // Right padding
     }
+
+    // Re-bind events for new buttons
+    for (auto btn : buttons) {
+        btn->Bind(wxEVT_BUTTON, &MainFrame::OnButtonClicked, this);
+        btn->Bind(wxEVT_RIGHT_DOWN, &MainFrame::OnButtonRightClick, this);
+    }
+
     Layout();
-	Fit();
+    Fit();
     ResetUI();
 }
