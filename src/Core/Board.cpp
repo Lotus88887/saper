@@ -1,4 +1,5 @@
 #include "Board.h"
+#include <queue>
 
 Board::Board(int r, int c, int m) : rows(r), cols(c), mines(m) {
     Reset();
@@ -77,15 +78,35 @@ void Board::CountAdjacents() {
 }
 
 void Board::RevealEmpty(int row, int col) {
-    for (int dr = -1; dr <= 1; ++dr)
-        for (int dc = -1; dc <= 1; ++dc) {
-            int nr = row + dr, nc = col + dc;
-            if (InBounds(nr, nc) && grid[nr][nc].state == Hidden && !grid[nr][nc].mine) {
-                grid[nr][nc].state = Revealed;
-                if (grid[nr][nc].adjacent == 0)
-                    RevealEmpty(nr, nc);
+    // Tworzymy kolejkę do przechowywania współrzędnych pól do odkrycia
+    std::queue<std::pair<int, int>> q;
+    // Dodajemy początkowe pole do kolejki
+    q.emplace(row, col);
+
+    // Przetwarzamy kolejkę, dopóki nie będzie pusta
+    while (!q.empty()) {
+        // Pobieramy współrzędne pola z początku kolejki (C++17 structured binding)
+        auto [r, c] = q.front();
+        // Usuwamy to pole z kolejki
+        q.pop();
+
+        // Przechodzimy po wszystkich sąsiadach (w tym po przekątnych)
+        for (int dr = -1; dr <= 1; ++dr) {
+            for (int dc = -1; dc <= 1; ++dc) {
+                // Wyliczamy współrzędne sąsiada
+                int nr = r + dr, nc = c + dc;
+                // Sprawdzamy, czy sąsiad jest w granicach planszy, jest ukryty i nie jest miną
+                if (InBounds(nr, nc) && grid[nr][nc].state == Hidden && !grid[nr][nc].mine) {
+                    // Odkrywamy sąsiada
+                    grid[nr][nc].state = Revealed;
+                    // Jeśli sąsiad nie ma sąsiadujących min, dodajemy go do kolejki do dalszego odkrywania
+                    if (grid[nr][nc].adjacent == 0) {
+                        q.emplace(nr, nc);
+                    }
+                }
             }
         }
+    }
 }
 
 bool Board::InBounds(int row, int col) const {

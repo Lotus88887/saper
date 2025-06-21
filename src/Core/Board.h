@@ -1,8 +1,16 @@
+/**
+ * @file Board.h
+ * @brief Definicja klasy Board oraz struktur i enumeracji pomocniczych do logiki gry Saper.
+ *
+ * Plik nagłówkowy zawierający deklarację klasy Board, która odpowiada za logikę planszy gry Saper,
+ * w tym obsługę pól, min, flag, odkrywania oraz sprawdzania warunków zwycięstwa.
+ */
 #pragma once
 #include <vector>
 #include <random>
 
 /**
+ * @class Board
  * @brief Logika planszy gry Saper.
  */
 class Board {
@@ -11,9 +19,10 @@ public:
      * @enum CellState
      * @brief Stan pojedynczego pola na planszy.
      */
-    enum CellState { Hidden,    ///< Pole ukryte
-                     Revealed,  ///< Pole odkryte
-                     Flagged    ///< Pole oznaczone flagą
+    enum CellState {
+        Hidden,    /**< Pole ukryte */
+        Revealed,  /**< Pole odkryte */
+        Flagged    /**< Pole oznaczone flagą */
     };
 
     /**
@@ -21,9 +30,9 @@ public:
      * @brief Reprezentuje pojedyncze pole na planszy.
      */
     struct Cell {
-        bool mine = false;         ///< Czy pole zawiera minę
-        int adjacent = 0;         ///< Liczba sąsiadujących min
-        CellState state = Hidden; ///< Aktualny stan pola
+        bool mine = false;         /**< Czy pole zawiera minę */
+        int adjacent = 0;         /**< Liczba sąsiadujących min */
+        CellState state = Hidden; /**< Aktualny stan pola */
     };
 
     /**
@@ -81,11 +90,11 @@ public:
     bool IsWin() const;
 
 private:
-    int rows;   ///< Liczba wierszy planszy
-    int cols;   ///< Liczba kolumn planszy
-    int mines;  ///< Liczba min na planszy
-    std::vector<std::vector<Cell>> grid; ///< Dwuwymiarowa siatka pól
-    bool firstMove = true; ///< Czy to pierwszy ruch gracza
+    int rows;   /**< Liczba wierszy planszy */
+    int cols;   /**< Liczba kolumn planszy */
+    int mines;  /**< Liczba min na planszy */
+    std::vector<std::vector<Cell>> grid; /**< Dwuwymiarowa siatka pól */
+    bool firstMove = true; /**< Czy to pierwszy ruch gracza */
 
     /**
      * @brief Rozstawia miny na planszy, omijając pierwsze kliknięte pole.
@@ -100,9 +109,14 @@ private:
     void CountAdjacents();
 
     /**
-     * @brief Rekurencyjnie odkrywa puste pola sąsiadujące z danym polem.
-     * @param row Wiersz pola.
-     * @param col Kolumna pola.
+     * @brief Iteracyjnie (BFS) odkrywa puste pola sąsiadujące z danym polem.
+     *
+     * Odkrywa wszystkie przyległe puste pola (o adjacent == 0) oraz ich sąsiadów,
+     * wykorzystując algorytm przeszukiwania wszerz (BFS) z użyciem kolejki.
+     * Dzięki temu unika przepełnienia stosu i jest wydajniejsza od wersji rekurencyjnej.
+     *
+     * @param row Wiersz pola startowego.
+     * @param col Kolumna pola startowego.
      */
     void RevealEmpty(int row, int col);
 
