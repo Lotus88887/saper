@@ -1,6 +1,7 @@
 #include "MainFrame.h"
 #include "BoardUI.h"
 #include <algorithm> // for std::min
+#include "../Core/Difficulty.h"
 
 // Timer event ID and Info Button ID
 const int ID_TIMER = 1001;
@@ -52,6 +53,16 @@ MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, "Minesweeper", wxDefaultPositio
     m_mineCounter->SetFont(wxFont(12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
     headerSizer->Add(m_mineCounter, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, 5);
     
+    // Dodaj ComboBox do wyboru poziomu trudności
+    wxArrayString diffChoices;
+    diffChoices.Add("Łatwy");
+    diffChoices.Add("Średni");
+    diffChoices.Add("Trudny");
+    m_difficultyCombo = new wxComboBox(headerPanel, wxID_ANY, diffChoices[0], wxDefaultPosition, wxDefaultSize, diffChoices, wxCB_READONLY);
+    headerSizer->Add(m_difficultyCombo, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, 10);
+    m_difficultyCombo->SetSelection(0);
+    m_difficultyCombo->Bind(wxEVT_COMBOBOX, &MainFrame::OnDifficultyChanged, this);
+
     // Add spacer to push info button to the center
     headerSizer->AddStretchSpacer();
     
@@ -87,8 +98,8 @@ MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, "Minesweeper", wxDefaultPositio
     wxBoxSizer* horizontalSizer = new wxBoxSizer(wxHORIZONTAL);
     horizontalSizer->AddSpacer(10); // Left padding
     
-    wxGridSizer* gridSizer = CreateBoardUI(this, rows, cols, buttons);
-    horizontalSizer->Add(gridSizer, 1, wxEXPAND);
+    m_gridSizer = CreateBoardUI(this, rows, cols, buttons);
+    horizontalSizer->Add(m_gridSizer, 1, wxEXPAND);
     horizontalSizer->AddSpacer(10); // Right padding
     
     mainSizer->Add(horizontalSizer, 1, wxEXPAND);
@@ -101,7 +112,7 @@ MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, "Minesweeper", wxDefaultPositio
 
     // Create timer
     m_timer = new wxTimer(this, ID_TIMER);
-    
+
     this->SetSizerAndFit(mainSizer);
 }
 
@@ -300,4 +311,52 @@ void MainFrame::ResetUI() {
     // Reset mine counter
     m_remainingMines = mines;
     m_mineCounter->SetLabel(wxString::Format("%d", m_remainingMines));
+}
+
+void MainFrame::OnDifficultyChanged(wxCommandEvent& event) {
+    int sel = m_difficultyCombo->GetSelection();
+    switch (sel) {
+        case 0: m_difficulty = Difficulty::Easy; break;
+        case 1: m_difficulty = Difficulty::Medium; break;
+        case 2: m_difficulty = Difficulty::Hard; break;
+        default: m_difficulty = Difficulty::Easy; break;
+    }
+    auto settings = GetSettings(m_difficulty);
+    rows = settings.rows;
+    cols = settings.cols;
+    mines = settings.mines;
+    board = Board(rows, cols, mines);
+
+    // Remove old buttons from UI
+    for (auto btn : buttons) {
+        btn->Destroy();
+    }
+    buttons.clear();
+
+    // Remove old sizer from the layout
+    if (m_gridSizer) {
+        m_gridSizer->Clear(true); // true = delete windows
+        m_gridSizer = nullptr;
+    }
+
+    // Create new board UI
+    m_gridSizer = CreateBoardUI(this, rows, cols, buttons);
+
+    // Initialize the horizontal sizer reference if not already set
+    if (!m_horizontalSizer) {
+        wxBoxSizer* mainSizer = static_cast<wxBoxSizer*>(GetSizer());
+        if (mainSizer) {
+            wxSizerItemList& items = mainSizer->GetChildren();
+            for (auto item : items) {
+                m_horizontalSizer = dynamic_cast<wxBoxSizer*>(item->GetSizer());
+                if (m_horizontalSizer) break;
+            }
+        m_horizontalSizer->Clear(false); // remove old grid sizer, don't delete children (already destroyed)
+        m_horizontalSizer->AddSpacer(10); // Left padding
+        m_horizontalSizer->Add(m_gridSizer, 1, wxEXPAND);
+        m_horizontalSizer->AddSpacer(10); // Right padding
+    }
+    Layout();
+	Fit();
+    ResetUI();
 }

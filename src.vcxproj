@@ -27,6 +27,7 @@
   <ItemGroup>
     <ClInclude Include="src\App\App.h" />
     <ClInclude Include="src\Core\Board.h" />
+    <ClInclude Include="src\Core\Difficulty.h" />
     <ClInclude Include="src\Ui\BoardUI.h" />
     <ClInclude Include="src\Ui\MainFrame.h" />
   </ItemGroup>
