@@ -9,30 +9,43 @@ wxEND_EVENT_TABLE()
 
 wxColour GetNumberColor(int number) {
     switch (number) {
-    case 1: return wxColour(0, 0, 255);      // Blue
-    case 2: return wxColour(0, 128, 0);      // Green
-    case 3: return wxColour(255, 0, 0);      // Red
-    case 4: return wxColour(0, 0, 128);      // Dark Blue
-    case 5: return wxColour(128, 0, 0);      // Dark Red
-    case 6: return wxColour(0, 128, 128);    // Teal
-    case 7: return wxColour(0, 0, 0);        // Black
-    case 8: return wxColour(128, 128, 128);  // Gray
-    default: return *wxBLACK;
+    case 1: return wxColour(33, 150, 243);   // Modern Blue
+    case 2: return wxColour(76, 175, 80);    // Modern Green
+    case 3: return wxColour(244, 67, 54);    // Modern Red
+    case 4: return wxColour(156, 39, 176);   // Modern Purple
+    case 5: return wxColour(255, 152, 0);    // Modern Orange
+    case 6: return wxColour(0, 188, 212);    // Modern Teal
+    case 7: return wxColour(96, 125, 139);   // Modern Blue Gray
+    case 8: return wxColour(121, 85, 72);    // Modern Brown
+    default: return wxColour(66, 66, 66);    // Dark Gray
     }
 }
 
-MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, "Saper")
+MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, "Minesweeper", wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE | wxCLIP_CHILDREN)
 {
+    // Center on screen
     Centre();
-
+    
+    // Add minimal padding around grid
+    wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
+    mainSizer->AddSpacer(10); // Top padding
+    
+    wxBoxSizer* horizontalSizer = new wxBoxSizer(wxHORIZONTAL);
+    horizontalSizer->AddSpacer(10); // Left padding
+    
     wxGridSizer* gridSizer = CreateBoardUI(this, rows, cols, buttons);
+    horizontalSizer->Add(gridSizer, 1, wxEXPAND);
+    horizontalSizer->AddSpacer(10); // Right padding
+    
+    mainSizer->Add(horizontalSizer, 1, wxEXPAND);
+    mainSizer->AddSpacer(10); // Bottom padding
 
     for (auto btn : buttons) {
         btn->Bind(wxEVT_BUTTON, &MainFrame::OnButtonClicked, this);
         btn->Bind(wxEVT_RIGHT_DOWN, &MainFrame::OnButtonRightClick, this);
     }
 
-    this->SetSizerAndFit(gridSizer);
+    this->SetSizerAndFit(mainSizer);
 }
 
 void MainFrame::OnClose(wxCloseEvent& event) {
@@ -56,7 +69,11 @@ void MainFrame::OnButtonClicked(wxCommandEvent& event) {
         font.SetWeight(wxFONTWEIGHT_BOLD);
         font.SetPointSize(12);
         btn->SetFont(font);
-        btn->SetLabel("X");
+        btn->SetLabel("💣");
+        btn->SetForegroundColour(wxColour(244, 67, 54)); // Modern Red for mine
+        
+        // Use darker background color for revealed mine
+        btn->SetBackgroundColour(wxColour(200, 200, 200)); // Slightly darker gray
 
         wxMessageBox("Przegrałeś!", "Koniec gry");
         
@@ -72,26 +89,31 @@ void MainFrame::OnButtonClicked(wxCommandEvent& event) {
             wxButton* b = buttons[r * cols + c];
             if (cell.state == Board::Revealed) {
                 if (cell.mine) {
-                    b->SetLabel("X");
+                    b->SetLabel("💣");
+                    b->SetForegroundColour(wxColour(244, 67, 54)); // Modern Red for mine
                 }
                 else if (cell.adjacent > 0) {
                     b->SetLabel(std::to_string(cell.adjacent));
-                    //b->SetForegroundColour(GetNumberColor(cell.adjacent));
-                    // Set font: bold, size 12, default family
+                    b->SetForegroundColour(GetNumberColor(cell.adjacent));
+                    // Set font: bold, size 11, default family for better readability
                     wxFont font = b->GetFont();
                     font.SetWeight(wxFONTWEIGHT_BOLD);
-                    font.SetPointSize(10);
+                    font.SetPointSize(11);
                     b->SetFont(font);
                 }
                 else {
                     b->SetLabel("");
-                    //b->SetForegroundColour(wxNullColour);
+                    b->SetForegroundColour(wxNullColour);
                     wxFont font = b->GetFont();
                     font.SetWeight(wxFONTWEIGHT_NORMAL);
-                    font.SetPointSize(10); // Default size
+                    font.SetPointSize(10);
                     b->SetFont(font);
                 }
-                b->Enable(false);
+                
+                // Use white background color for revealed cells - clean modern look
+                b->SetBackgroundColour(wxColour(255, 255, 255)); 
+                b->Unbind(wxEVT_BUTTON, &MainFrame::OnButtonClicked, this);
+                b->Unbind(wxEVT_RIGHT_DOWN, &MainFrame::OnButtonRightClick, this);
             }
         }
 
@@ -105,7 +127,6 @@ void MainFrame::OnButtonClicked(wxCommandEvent& event) {
 void MainFrame::OnButtonRightClick(wxMouseEvent& event) {
     wxButton* btn = dynamic_cast<wxButton*>(event.GetEventObject());
     if (btn) {
-        //wxMessageBox("Right button was clicked!");
         int idx = std::find(buttons.begin(), buttons.end(), btn) - buttons.begin();
         int row = idx / cols, col = idx % cols;
         board.ToggleFlag(row, col);
@@ -117,7 +138,10 @@ void MainFrame::OnButtonRightClick(wxMouseEvent& event) {
             font.SetWeight(wxFONTWEIGHT_BOLD);
             font.SetPointSize(12);
             btn->SetFont(font);
-            btn->SetLabel("F");
+            btn->SetLabel("🚩");
+            btn->SetForegroundColour(wxColour(244, 67, 54)); // Modern Red for flag
+            // Use slightly darker background for flagged cells
+            btn->SetBackgroundColour(wxColour(240, 240, 240));
         }
         else if (cell.state == Board::CellState::Hidden) {
             wxFont font = btn->GetFont();
@@ -125,6 +149,9 @@ void MainFrame::OnButtonRightClick(wxMouseEvent& event) {
             font.SetPointSize(12);
             btn->SetFont(font);
             btn->SetLabel("");
+            btn->SetForegroundColour(wxNullColour);
+            // Reset to default light gray button color
+            btn->SetBackgroundColour(wxColour(220, 220, 220));
         }
     }
 }
@@ -132,11 +159,14 @@ void MainFrame::OnButtonRightClick(wxMouseEvent& event) {
 void MainFrame::ResetUI() {
     for (auto btn : buttons) {
         btn->SetLabel("");
-        btn->Enable(true);
+        // Reset to light gray buttons
+        btn->SetBackgroundColour(wxColour(220, 220, 220));
         btn->SetForegroundColour(wxNullColour);
+        // Modern font
         wxFont font = btn->GetFont();
         font.SetWeight(wxFONTWEIGHT_NORMAL);
         font.SetPointSize(10);
+        font.SetFamily(wxFONTFAMILY_DEFAULT);
         btn->SetFont(font);
     }
 }
