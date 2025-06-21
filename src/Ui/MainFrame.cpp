@@ -85,7 +85,7 @@ MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, L"Minesweeper", wxDefaultPositi
     
     // Mine counter
     wxFont emojiFont = GetEmojiFont(12);
-    wxStaticText* mineLabel = new wxStaticText(headerPanel, wxID_ANY, L"💣 ");
+    wxStaticText* mineLabel = new wxStaticText(headerPanel, wxID_ANY, L"\U0001F4A3");
     mineLabel->SetForegroundColour(wxColour(255, 255, 255));
     mineLabel->SetFont(emojiFont);
     headerSizer->Add(mineLabel, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, 10);
@@ -97,8 +97,8 @@ MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, L"Minesweeper", wxDefaultPositi
     
     // Dodaj ComboBox do wyboru poziomu trudności
     wxArrayString diffChoices;
-    diffChoices.Add("Łatwy");
-    diffChoices.Add("Średni");
+    diffChoices.Add("\u0141atwy");
+    diffChoices.Add("\u015aredni");
     diffChoices.Add("Trudny");
     m_difficultyCombo = new wxComboBox(headerPanel, wxID_ANY, diffChoices[0], wxDefaultPosition, wxDefaultSize, diffChoices, wxCB_READONLY);
     headerSizer->Add(m_difficultyCombo, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, 10);
@@ -122,7 +122,7 @@ MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, L"Minesweeper", wxDefaultPositi
     headerSizer->AddStretchSpacer();
     
     // Timer display
-    wxStaticText* timerLabel = new wxStaticText(headerPanel, wxID_ANY, L"⏱️ ");
+    wxStaticText* timerLabel = new wxStaticText(headerPanel, wxID_ANY, L"\u23f1\ufe0f ");
     timerLabel->SetForegroundColour(wxColour(255, 255, 255));
     timerLabel->SetFont(emojiFont);
     headerSizer->Add(timerLabel, 0, wxALIGN_CENTER_VERTICAL);
@@ -160,10 +160,10 @@ MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, L"Minesweeper", wxDefaultPositi
 
 void MainFrame::OnInfoButtonClicked(wxCommandEvent& WXUNUSED(event)) {
     wxString message = L"Minesweeper\n\n"
-                      L"Created by: Kacper Kałuża, Przemysław Błaszczyk, Mateusz Biskup\n"
+                      L"Created by: Kacper Ka\u0142u\u017ca, Przemys\u0142aw B\u0142aszczyk, Mateusz Biskup\n"
                       L"Version: 1.0\n\n"
                       L"A modern implementation of the classic Minesweeper game using wxWidgets.\n\n"
-                      L"© 2025 All Rights Reserved";
+                      L"\u00a9 2025 All Rights Reserved";
     
     wxMessageDialog dialog(this, message, L"About Minesweeper", wxOK | wxICON_INFORMATION);
     dialog.ShowModal();
@@ -192,7 +192,7 @@ void MainFrame::UpdateMineCounter() {
 
 void MainFrame::OnClose(wxCloseEvent& event) {
     if (event.CanVeto()) {
-        if (wxMessageBox(L"Czy napewno chcesz wyjść?", L"Proszę potwierdź", wxICON_QUESTION | wxYES_NO) != wxYES) {
+        if (wxMessageBox(L"Czy napewno chcesz wyj\u015b\u0107?", L"Prosz\u0119 potwierd\u017a", wxICON_QUESTION | wxYES_NO) != wxYES) {
             event.Veto();
             return;
         }
@@ -221,7 +221,7 @@ void MainFrame::OnButtonClicked(wxCommandEvent& event) {
     if (board.Reveal(row, col)) {
         wxFont font = GetEmojiFont(12);
         btn->SetFont(font);
-        btn->SetLabel(L"💣");
+        btn->SetLabel(L"\U0001F4A3");
         btn->SetForegroundColour(wxColour(244, 67, 54)); // Modern Red for mine
         
         // Use darker background color for revealed mine
@@ -232,7 +232,7 @@ void MainFrame::OnButtonClicked(wxCommandEvent& event) {
             m_timer->Stop();
         }
 
-        wxMessageBox(L"Przegrałeś!", L"Koniec gry");
+        wxMessageBox(L"Przegr\u00a2e\u015b!", L"Koniec gry");
         
         board.Reset();
         ResetUI();
@@ -248,7 +248,7 @@ void MainFrame::OnButtonClicked(wxCommandEvent& event) {
                 if (cell.mine) {
                     wxFont font = GetEmojiFont(12);
                     b->SetFont(font);
-                    b->SetLabel(L"💣");
+                    b->SetLabel(L"\U0001F4A3");
                     b->SetForegroundColour(wxColour(244, 67, 54)); // Modern Red for mine
                 }
                 else if (cell.adjacent > 0) {
@@ -280,7 +280,7 @@ void MainFrame::OnButtonClicked(wxCommandEvent& event) {
             m_timer->Stop();
         }
         
-        wxMessageBox(L"Wygrałeś!", L"Koniec gry");
+        wxMessageBox(L"Wygra\u0142e\u015b!", L"Koniec gry");
         board.Reset();
         ResetUI();
     }
@@ -298,7 +298,7 @@ void MainFrame::OnButtonRightClick(wxMouseEvent& event) {
         if (cell.state == Board::CellState::Flagged) {
             wxFont font = GetEmojiFont(12);
             btn->SetFont(font);
-            btn->SetLabel(L"🚩");
+            btn->SetLabel(L"\U0001F6A9");
             btn->SetForegroundColour(wxColour(244, 67, 54)); // Modern Red for flag
             // Use slightly darker background for flagged cells
             btn->SetBackgroundColour(wxColour(240, 240, 240));
