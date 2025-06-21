@@ -168,11 +168,5 @@ void MainFrame::ResetUI() {
         font.SetPointSize(10);
         font.SetFamily(wxFONTFAMILY_DEFAULT);
         btn->SetFont(font);
-        
-        // Re-bind events
-        btn->Unbind(wxEVT_BUTTON, &MainFrame::OnButtonClicked, this);
-        btn->Unbind(wxEVT_RIGHT_DOWN, &MainFrame::OnButtonRightClick, this);
-        btn->Bind(wxEVT_BUTTON, &MainFrame::OnButtonClicked, this);
-        btn->Bind(wxEVT_RIGHT_DOWN, &MainFrame::OnButtonRightClick, this);
     }
 }
