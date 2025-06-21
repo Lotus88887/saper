@@ -342,29 +342,20 @@ void MainFrame::OnDifficultyChanged(wxCommandEvent& event) {
     // Create new board UI
     m_gridSizer = CreateBoardUI(this, rows, cols, buttons);
 
-    // Find the horizontal sizer and replace the old grid sizer
-    wxBoxSizer* mainSizer = static_cast<wxBoxSizer*>(GetSizer());
-    wxBoxSizer* horizontalSizer = nullptr;
-    if (mainSizer) {
-        wxSizerItemList& items = mainSizer->GetChildren();
-        for (auto item : items) {
-            horizontalSizer = dynamic_cast<wxBoxSizer*>(item->GetSizer());
-            if (horizontalSizer) break;
-        }
+    // Initialize the horizontal sizer reference if not already set
+    if (!m_horizontalSizer) {
+        wxBoxSizer* mainSizer = static_cast<wxBoxSizer*>(GetSizer());
+        if (mainSizer) {
+            wxSizerItemList& items = mainSizer->GetChildren();
+            for (auto item : items) {
+                m_horizontalSizer = dynamic_cast<wxBoxSizer*>(item->GetSizer());
+                if (m_horizontalSizer) break;
+            }
+        m_horizontalSizer->Clear(false); // remove old grid sizer, don't delete children (already destroyed)
+        m_horizontalSizer->AddSpacer(10); // Left padding
+        m_horizontalSizer->Add(m_gridSizer, 1, wxEXPAND);
+        m_horizontalSizer->AddSpacer(10); // Right padding
     }
-    if (horizontalSizer) {
-        horizontalSizer->Clear(false); // remove old grid sizer, don't delete children (already destroyed)
-        horizontalSizer->AddSpacer(10); // Left padding
-        horizontalSizer->Add(m_gridSizer, 1, wxEXPAND);
-        horizontalSizer->AddSpacer(10); // Right padding
-    }
-
-    // Re-bind events for new buttons
-    for (auto btn : buttons) {
-        btn->Bind(wxEVT_BUTTON, &MainFrame::OnButtonClicked, this);
-        btn->Bind(wxEVT_RIGHT_DOWN, &MainFrame::OnButtonRightClick, this);
-    }
-
     Layout();
 	Fit();
     ResetUI();
