@@ -137,6 +137,11 @@ public:
      */
     wxBoxSizer* m_horizontalSizer = nullptr;
 
+    /**
+     * @brief Deklaruje tabelę zdarzeń dla klasy MainFrame.
+     *
+     * Makro wxWidgets umożliwiające obsługę zdarzeń GUI w tej klasie.
+     */
     wxDECLARE_EVENT_TABLE();
 };
 
