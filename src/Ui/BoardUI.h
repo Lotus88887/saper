@@ -3,41 +3,50 @@
 #include <vector>
 
 /**
- * @brief Tworzy siatkę przycisków dla planszy gry.
+ * @file BoardUI.h
+ * @brief Zawiera funkcję pomocniczą do tworzenia interfejsu planszy gry w Saperze.
+ */
+
+/**
+ * @brief Tworzy siatkę przycisków reprezentujących planszę gry.
  *
- * @param parent Wskaźnik do rodzica (np. MainFrame).
- * @param rows Liczba wierszy.
- * @param cols Liczba kolumn.
- * @param buttons Wektor do przechowywania wskaźników do przycisków.
- * @return Wskaźnik do utworzonego wxGridSizer.
+ * Funkcja generuje siatkę przycisków o zadanej liczbie wierszy i kolumn, 
+ * ustawia ich wygląd oraz dodaje do przekazanego wektora wskaźników. 
+ * Każdy przycisk posiada nowoczesny wygląd oraz odpowiednią czcionkę.
+ *
+ * @param parent Wskaźnik do okna rodzica (np. MainFrame).
+ * @param rows Liczba wierszy planszy.
+ * @param cols Liczba kolumn planszy.
+ * @param buttons Referencja do wektora, w którym zostaną zapisane wskaźniki do utworzonych przycisków.
+ * @return Wskaźnik do utworzonego obiektu wxGridSizer, zawierającego przyciski planszy.
  */
 inline wxGridSizer* CreateBoardUI(wxWindow* parent, int rows, int cols, std::vector<wxButton*>& buttons) {
-    // Set a dark gray background for the main window
+    // Ustawienie ciemnoszarego tła dla głównego okna
     parent->SetBackgroundColour(wxColour(50, 50, 50));
     
-    // Use FlexGridSizer with small gaps for a cleaner look
-    wxGridSizer* gridSizer = new wxGridSizer(rows, cols, 2, 2); // 2px gap between buttons
+    // Utworzenie siatki z odstępami 2px między przyciskami
+    wxGridSizer* gridSizer = new wxGridSizer(rows, cols, 2, 2);
     buttons.resize(rows * cols);
 
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
-            // Create button with no border style and modern flat appearance
+            // Utworzenie przycisku bez obramowania, o nowoczesnym wyglądzie
             wxButton* myButton = new wxButton(parent, wxID_ANY, "", 
                                              wxDefaultPosition, 
-                                             wxSize(36, 36), // Slightly larger buttons for better touch targets
+                                             wxSize(36, 36),
                                              wxBORDER_NONE);
             
-            // Set modern flat appearance with light gray background
-            myButton->SetBackgroundColour(wxColour(220, 220, 220)); // Light gray
+            // Ustawienie jasnoszarego tła przycisku
+            myButton->SetBackgroundColour(wxColour(220, 220, 220));
             
-            // Set modern font
+            // Ustawienie nowoczesnej, pogrubionej czcionki
             wxFont font = myButton->GetFont();
             font.SetPointSize(10);
             font.SetFamily(wxFONTFAMILY_DEFAULT);
             font.SetWeight(wxFONTWEIGHT_BOLD);
             myButton->SetFont(font);
             
-            // Add to grid with uniform spacing
+            // Dodanie przycisku do siatki
             gridSizer->Add(myButton, 0, wxEXPAND);
             buttons[i * cols + j] = myButton;
         }

@@ -1,15 +1,41 @@
 #include "Board.h"
 #include <queue>
 
+/**
+ * @file Board.cpp
+ * @brief Implementacja logiki planszy gry Saper.
+ */
+
+/**
+ * @brief Konstruktor planszy gry.
+ *
+ * Inicjalizuje planszę o zadanych wymiarach i liczbie min.
+ * @param r Liczba wierszy.
+ * @param c Liczba kolumn.
+ * @param m Liczba min.
+ */
 Board::Board(int r, int c, int m) : rows(r), cols(c), mines(m) {
     Reset();
 }
 
+/**
+ * @brief Resetuje planszę do stanu początkowego.
+ *
+ * Czyści siatkę pól i ustawia flagę pierwszego ruchu.
+ */
 void Board::Reset() {
     grid.assign(rows, std::vector<Cell>(cols));
     firstMove = true;
 }
 
+/**
+ * @brief Odkrywa pole na planszy.
+ *
+ * Jeśli to pierwszy ruch, rozmieszcza miny i liczy sąsiadów. Odkrywa puste pola rekurencyjnie.
+ * @param row Wiersz pola.
+ * @param col Kolumna pola.
+ * @return true jeśli trafiono minę, false w przeciwnym wypadku.
+ */
 bool Board::Reveal(int row, int col) {
     if (!InBounds(row, col)) return false;
     if (grid[row][col].state == Revealed || grid[row][col].state == Flagged) return false;
@@ -29,17 +55,35 @@ bool Board::Reveal(int row, int col) {
     return false;
 }
 
-
+/**
+ * @brief Przełącza flagę na polu (oznaczenie miny).
+ *
+ * @param row Wiersz pola.
+ * @param col Kolumna pola.
+ */
 void Board::ToggleFlag(int row, int col) {
     if (!InBounds(row, col)) return;
     if (grid[row][col].state == Revealed) return;
     grid[row][col].state = (grid[row][col].state == Flagged) ? Hidden : Flagged;
 }
 
+/**
+ * @brief Zwraca stałą referencję do komórki planszy.
+ *
+ * @param row Wiersz pola.
+ * @param col Kolumna pola.
+ * @return Stała referencja do komórki.
+ */
 const Board::Cell& Board::GetCell(int row, int col) const {
     return grid[row][col];
 }
 
+/**
+ * @brief Sprawdza, czy gracz wygrał grę.
+ *
+ * Zwraca true, jeśli wszystkie nie-minowe pola są odkryte.
+ * @return true jeśli wygrana, false w przeciwnym wypadku.
+ */
 bool Board::IsWin() const {
     for (int r = 0; r < rows; ++r)
         for (int c = 0; c < cols; ++c)
@@ -48,6 +92,12 @@ bool Board::IsWin() const {
     return true;
 }
 
+/**
+ * @brief Rozmieszcza miny na planszy z pominięciem pierwszego ruchu.
+ *
+ * @param safeRow Wiersz pierwszego ruchu (bez miny).
+ * @param safeCol Kolumna pierwszego ruchu (bez miny).
+ */
 void Board::PlaceMines(int safeRow, int safeCol) {
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -62,6 +112,9 @@ void Board::PlaceMines(int safeRow, int safeCol) {
         grid[positions[i].first][positions[i].second].mine = true;
 }
 
+/**
+ * @brief Liczy liczbę sąsiadujących min dla każdego pola.
+ */
 void Board::CountAdjacents() {
     for (int r = 0; r < rows; ++r)
         for (int c = 0; c < cols; ++c) {
@@ -77,6 +130,12 @@ void Board::CountAdjacents() {
         }
 }
 
+/**
+ * @brief Odkrywa puste pola wokół danego pola (algorytm BFS).
+ *
+ * @param row Wiersz początkowy.
+ * @param col Kolumna początkowa.
+ */
 void Board::RevealEmpty(int row, int col) {
     // Tworzymy kolejkę do przechowywania współrzędnych pól do odkrycia
     std::queue<std::pair<int, int>> q;
@@ -109,6 +168,13 @@ void Board::RevealEmpty(int row, int col) {
     }
 }
 
+/**
+ * @brief Sprawdza, czy współrzędne znajdują się w granicach planszy.
+ *
+ * @param row Wiersz.
+ * @param col Kolumna.
+ * @return true jeśli współrzędne są poprawne, false w przeciwnym wypadku.
+ */
 bool Board::InBounds(int row, int col) const {
     return row >= 0 && row < rows && col >= 0 && col < cols;
 }

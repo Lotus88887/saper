@@ -2,13 +2,18 @@
 #include <wx/wx.h>
 #include <vector>
 #include "../Core/Board.h"
-#include "../Core/Difficulty.h" // Dodano dla obsługi poziomów trudności
+#include "../Core/Difficulty.h"
+
+/**
+ * @file MainFrame.h
+ * @brief Deklaracja klasy głównego okna gry Saper oraz jej metod i pól.
+ */
 
 /**
  * @class MainFrame
  * @brief Główne okno gry Saper.
  *
- * Odpowiada za utworzenie siatki gry oraz obsługę interakcji użytkownika.
+ * Odpowiada za utworzenie siatki gry, obsługę interakcji użytkownika oraz zarządzanie elementami interfejsu.
  */
 class MainFrame : public wxFrame
 {
@@ -18,10 +23,22 @@ public:
      */
     MainFrame();
     
+    /**
+     * @brief Liczba wierszy planszy.
+     */
     int rows = 9;
+    /**
+     * @brief Liczba kolumn planszy.
+     */
     int cols = 9;
+    /**
+     * @brief Liczba min na planszy.
+     */
     int mines = 10;
 
+    /**
+     * @brief Resetuje interfejs planszy do stanu początkowego.
+     */
     void ResetUI();
     
     /**
