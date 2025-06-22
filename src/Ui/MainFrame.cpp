@@ -2,6 +2,10 @@
 #include "BoardUI.h"
 #include <algorithm> // for std::min
 #include "../Core/Difficulty.h"
+#include <wx/strconv.h>
+#include <wx/font.h>
+#include <locale.h>
+#include <locale>
 
 // Timer event ID and Info Button ID
 const int ID_TIMER = 1001;
@@ -27,9 +31,46 @@ wxColour GetNumberColor(int number) {
     }
 }
 
-MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, "Minesweeper", wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE | wxCLIP_CHILDREN),
+// Helper function to set a Unicode/emoji font with fallback using wxFontInfo
+wxFont GetEmojiFont(int size, int weight = wxFONTWEIGHT_BOLD) {
+    wxFontInfo info(size);
+    info.Family(wxFONTFAMILY_DEFAULT).Style(wxFONTSTYLE_NORMAL).Weight(weight);
+    // Try common emoji/Unicode fonts in order
+    const char* fontNames[] = {
+        "Segoe UI Emoji",        // Windows
+        "Noto Color Emoji",     // Linux
+        "Apple Color Emoji",    // macOS
+        "Arial Unicode MS",     // Windows fallback
+        "Segoe UI Symbol",      // Windows fallback
+        "Symbola"               // Linux/Windows fallback
+    };
+    for (const char* name : fontNames) {
+        info.FaceName(name);
+        wxFont font(info);
+        if (font.IsOk()) {
+            return font;
+        }
+    }
+    // Fallback to default
+    return wxFont(info);
+}
+
+MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, L"Minesweeper", wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE | wxCLIP_CHILDREN),
                          m_timer(nullptr), m_seconds(0), m_remainingMines(mines)
 {
+    // Always use Polish formatting for C and C++ locale
+    setlocale(LC_ALL, "Polish_Poland.1250");
+    std::locale::global(std::locale("Polish_Poland.1250"));
+
+    // Set Polish UTF-8 locale for proper Unicode and Polish support
+    static wxLocale* locale = nullptr;
+    if (!locale) {
+        locale = new wxLocale();
+        if (!locale->Init(wxLANGUAGE_POLISH, wxLOCALE_LOAD_DEFAULT)) {
+            locale->Init();
+        }
+    }
+
     // Center on screen
     Centre();
     
@@ -43,20 +84,21 @@ MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, "Minesweeper", wxDefaultPositio
     wxBoxSizer* headerSizer = new wxBoxSizer(wxHORIZONTAL);
     
     // Mine counter
-    wxStaticText* mineLabel = new wxStaticText(headerPanel, wxID_ANY, "💣 ");
+    wxFont emojiFont = GetEmojiFont(12);
+    wxStaticText* mineLabel = new wxStaticText(headerPanel, wxID_ANY, L"\U0001F4A3");
     mineLabel->SetForegroundColour(wxColour(255, 255, 255));
-    mineLabel->SetFont(wxFont(12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
+    mineLabel->SetFont(emojiFont);
     headerSizer->Add(mineLabel, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, 10);
     
-    m_mineCounter = new wxStaticText(headerPanel, wxID_ANY, wxString::Format("%d", mines));
+    m_mineCounter = new wxStaticText(headerPanel, wxID_ANY, std::to_wstring(mines));
     m_mineCounter->SetForegroundColour(wxColour(255, 255, 255));
-    m_mineCounter->SetFont(wxFont(12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
+    m_mineCounter->SetFont(emojiFont);
     headerSizer->Add(m_mineCounter, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, 5);
     
     // Dodaj ComboBox do wyboru poziomu trudności
     wxArrayString diffChoices;
-    diffChoices.Add("Łatwy");
-    diffChoices.Add("Średni");
+    diffChoices.Add("\u0141atwy");
+    diffChoices.Add("\u015aredni");
     diffChoices.Add("Trudny");
     m_difficultyCombo = new wxComboBox(headerPanel, wxID_ANY, diffChoices[0], wxDefaultPosition, wxDefaultSize, diffChoices, wxCB_READONLY);
     headerSizer->Add(m_difficultyCombo, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, 10);
@@ -80,14 +122,14 @@ MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, "Minesweeper", wxDefaultPositio
     headerSizer->AddStretchSpacer();
     
     // Timer display
-    wxStaticText* timerLabel = new wxStaticText(headerPanel, wxID_ANY, "⏱️ ");
+    wxStaticText* timerLabel = new wxStaticText(headerPanel, wxID_ANY, L"\u23f1\ufe0f ");
     timerLabel->SetForegroundColour(wxColour(255, 255, 255));
-    timerLabel->SetFont(wxFont(12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
+    timerLabel->SetFont(emojiFont);
     headerSizer->Add(timerLabel, 0, wxALIGN_CENTER_VERTICAL);
     
-    m_timeCounter = new wxStaticText(headerPanel, wxID_ANY, "000");
+    m_timeCounter = new wxStaticText(headerPanel, wxID_ANY, L"000");
     m_timeCounter->SetForegroundColour(wxColour(255, 255, 255));
-    m_timeCounter->SetFont(wxFont(12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
+    m_timeCounter->SetFont(emojiFont);
     headerSizer->Add(m_timeCounter, 0, wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, 10);
     
     headerPanel->SetSizer(headerSizer);
@@ -117,19 +159,19 @@ MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, "Minesweeper", wxDefaultPositio
 }
 
 void MainFrame::OnInfoButtonClicked(wxCommandEvent& WXUNUSED(event)) {
-    wxString message = "Minesweeper\n\n"
-                      "Created by: Kacper Kałuża, Przemysław Błaszczyk, Mateusz Biskup\n"
-                      "Version: 1.0\n\n"
-                      "A modern implementation of the classic Minesweeper game using wxWidgets.\n\n"
-                      "© 2025 All Rights Reserved";
+    wxString message = L"Minesweeper\n\n"
+                      L"Created by: Kacper Ka\u0142u\u017ca, Przemys\u0142aw B\u0142aszczyk, Mateusz Biskup\n"
+                      L"Version: 1.0\n\n"
+                      L"A modern implementation of the classic Minesweeper game using wxWidgets.\n\n"
+                      L"\u00a9 2025 All Rights Reserved";
     
-    wxMessageDialog dialog(this, message, "About Minesweeper", wxOK | wxICON_INFORMATION);
+    wxMessageDialog dialog(this, message, L"About Minesweeper", wxOK | wxICON_INFORMATION);
     dialog.ShowModal();
 }
 
 void MainFrame::OnTimer(wxTimerEvent& WXUNUSED(event)) {
     m_seconds++;
-    m_timeCounter->SetLabel(wxString::Format("%03d", std::min(m_seconds, 999)));
+    m_timeCounter->SetLabel(wxString::Format(L"%03d", std::min(m_seconds, 999)));
 }
 
 void MainFrame::UpdateMineCounter() {
@@ -145,12 +187,12 @@ void MainFrame::UpdateMineCounter() {
     }
     
     m_remainingMines = mines - flaggedCells;
-    m_mineCounter->SetLabel(wxString::Format("%d", m_remainingMines));
+    m_mineCounter->SetLabel(std::to_wstring(m_remainingMines));
 }
 
 void MainFrame::OnClose(wxCloseEvent& event) {
     if (event.CanVeto()) {
-        if (wxMessageBox("Czy napewno chcesz wyjść?", "Proszę potwierdź", wxICON_QUESTION | wxYES_NO) != wxYES) {
+        if (wxMessageBox(L"Czy napewno chcesz wyj\u015b\u0107?", L"Prosz\u0119 potwierd\u017a", wxICON_QUESTION | wxYES_NO) != wxYES) {
             event.Veto();
             return;
         }
@@ -177,11 +219,9 @@ void MainFrame::OnButtonClicked(wxCommandEvent& event) {
     int row = idx / cols, col = idx % cols;
 
     if (board.Reveal(row, col)) {
-        wxFont font = btn->GetFont();
-        font.SetWeight(wxFONTWEIGHT_BOLD);
-        font.SetPointSize(12);
+        wxFont font = GetEmojiFont(12);
         btn->SetFont(font);
-        btn->SetLabel("💣");
+        btn->SetLabel(L"\U0001F4A3");
         btn->SetForegroundColour(wxColour(244, 67, 54)); // Modern Red for mine
         
         // Use darker background color for revealed mine
@@ -192,7 +232,7 @@ void MainFrame::OnButtonClicked(wxCommandEvent& event) {
             m_timer->Stop();
         }
 
-        wxMessageBox("Przegrałeś!", "Koniec gry");
+        wxMessageBox(L"Przegr\u0142e\u015b!", L"Koniec gry");
         
         board.Reset();
         ResetUI();
@@ -206,24 +246,24 @@ void MainFrame::OnButtonClicked(wxCommandEvent& event) {
             wxButton* b = buttons[r * cols + c];
             if (cell.state == Board::Revealed) {
                 if (cell.mine) {
-                    b->SetLabel("💣");
+                    wxFont font = GetEmojiFont(12);
+                    b->SetFont(font);
+                    b->SetLabel(L"\U0001F4A3");
                     b->SetForegroundColour(wxColour(244, 67, 54)); // Modern Red for mine
                 }
                 else if (cell.adjacent > 0) {
-                    b->SetLabel(std::to_string(cell.adjacent));
+                    b->SetLabel(std::to_wstring(cell.adjacent));
                     b->SetForegroundColour(GetNumberColor(cell.adjacent));
                     // Set font: bold, size 11, default family for better readability
-                    wxFont font = b->GetFont();
+                    wxFont font = GetEmojiFont(11);
                     font.SetWeight(wxFONTWEIGHT_BOLD);
-                    font.SetPointSize(11);
                     b->SetFont(font);
                 }
                 else {
-                    b->SetLabel("");
+                    b->SetLabel(L"");
                     b->SetForegroundColour(wxNullColour);
-                    wxFont font = b->GetFont();
+                    wxFont font = GetEmojiFont(10);
                     font.SetWeight(wxFONTWEIGHT_NORMAL);
-                    font.SetPointSize(10);
                     b->SetFont(font);
                 }
                 
@@ -240,7 +280,7 @@ void MainFrame::OnButtonClicked(wxCommandEvent& event) {
             m_timer->Stop();
         }
         
-        wxMessageBox("Wygrałeś!", "Koniec gry");
+        wxMessageBox(L"Wygra\u0142e\u015b!", L"Koniec gry");
         board.Reset();
         ResetUI();
     }
@@ -256,21 +296,18 @@ void MainFrame::OnButtonRightClick(wxMouseEvent& event) {
         const auto& cell = board.GetCell(row, col);
 
         if (cell.state == Board::CellState::Flagged) {
-            wxFont font = btn->GetFont();
-            font.SetWeight(wxFONTWEIGHT_BOLD);
-            font.SetPointSize(12);
+            wxFont font = GetEmojiFont(12);
             btn->SetFont(font);
-            btn->SetLabel("🚩");
+            btn->SetLabel(L"\U0001F6A9");
             btn->SetForegroundColour(wxColour(244, 67, 54)); // Modern Red for flag
             // Use slightly darker background for flagged cells
             btn->SetBackgroundColour(wxColour(240, 240, 240));
         }
         else if (cell.state == Board::CellState::Hidden) {
-            wxFont font = btn->GetFont();
+            wxFont font = GetEmojiFont(12);
             font.SetWeight(wxFONTWEIGHT_BOLD);
-            font.SetPointSize(12);
             btn->SetFont(font);
-            btn->SetLabel("");
+            btn->SetLabel(L"");
             btn->SetForegroundColour(wxNullColour);
             // Reset to default light gray button color
             btn->SetBackgroundColour(wxColour(220, 220, 220));
@@ -283,15 +320,13 @@ void MainFrame::OnButtonRightClick(wxMouseEvent& event) {
 
 void MainFrame::ResetUI() {
     for (auto btn : buttons) {
-        btn->SetLabel("");
+        btn->SetLabel(L"");
         // Reset to light gray buttons
         btn->SetBackgroundColour(wxColour(220, 220, 220));
         btn->SetForegroundColour(wxNullColour);
         // Modern font
-        wxFont font = btn->GetFont();
+        wxFont font = GetEmojiFont(10);
         font.SetWeight(wxFONTWEIGHT_NORMAL);
-        font.SetPointSize(10);
-        font.SetFamily(wxFONTFAMILY_DEFAULT);
         btn->SetFont(font);
         
         // Re-bind events
@@ -306,11 +341,11 @@ void MainFrame::ResetUI() {
         m_timer->Stop();
     }
     m_seconds = 0;
-    m_timeCounter->SetLabel("000");
+    m_timeCounter->SetLabel(L"000");
     
     // Reset mine counter
     m_remainingMines = mines;
-    m_mineCounter->SetLabel(wxString::Format("%d", m_remainingMines));
+    m_mineCounter->SetLabel(std::to_wstring(m_remainingMines));
 }
 
 void MainFrame::OnDifficultyChanged(wxCommandEvent& event) {
