@@ -11,7 +11,7 @@ void MainFrame_OnInfoButtonClicked(MainFrame* self, wxCommandEvent& WXUNUSED(eve
                         L"(Autor - Zainteresowania)\n"
                         L"Kacper Ka\u0142u\u017ca - design interfejs\u00f3w\n"
                         L"Przemys\u0142aw B\u0142aszczyk - gry wideo i fikcja naukowa\n"
-                        L"Mateusz Biskup - \n\n"
+                        L"Mateusz Biskup - pi\u0142ka no\u017cna i historia\n\n"
                         L"Studenci Politechniki \u015awi\u0119tokrzyskiej - Informatyka I Stopnia\n\n"
                         L"\u00a9 2025 All Rights Reserved";
     wxMessageDialog dialog(self, message, L"About Minesweeper", wxOK | wxICON_INFORMATION);
