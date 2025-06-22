@@ -232,7 +232,7 @@ void MainFrame::OnButtonClicked(wxCommandEvent& event) {
             m_timer->Stop();
         }
 
-        wxMessageBox(L"Przegr\u00a2e\u015b!", L"Koniec gry");
+        wxMessageBox(L"Przegr\u0142e\u015b!", L"Koniec gry");
         
         board.Reset();
         ResetUI();
