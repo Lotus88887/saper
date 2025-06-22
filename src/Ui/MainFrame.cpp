@@ -171,7 +171,7 @@ void MainFrame::OnInfoButtonClicked(wxCommandEvent& WXUNUSED(event)) {
 
 void MainFrame::OnTimer(wxTimerEvent& WXUNUSED(event)) {
     m_seconds++;
-    m_timeCounter->SetLabel(std::to_wstring(std::min(m_seconds, 999)));
+    m_timeCounter->SetLabel(wxString::Format(L"%03d", std::min(m_seconds, 999)));
 }
 
 void MainFrame::UpdateMineCounter() {
