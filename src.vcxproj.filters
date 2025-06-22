@@ -11,6 +11,15 @@
     <ClCompile Include="src\Core\Board.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="src\Ui\UiEvents.cpp">
+      <Filter>Ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Ui\UiLayout.cpp">
+      <Filter>Ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Ui\UiUtil.cpp">
+      <Filter>Ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="App">
@@ -38,6 +47,15 @@
     </ClInclude>
     <ClInclude Include="src\Core\Difficulty.h">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Ui\UiEvents.h">
+      <Filter>Ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Ui\UiLayout.h">
+      <Filter>Ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Ui\UiUtil.h">
+      <Filter>Ui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

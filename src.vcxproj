@@ -23,6 +23,9 @@
     <ClCompile Include="src\Core\Board.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Ui\MainFrame.cpp" />
+    <ClCompile Include="src\Ui\UiEvents.cpp" />
+    <ClCompile Include="src\Ui\UiLayout.cpp" />
+    <ClCompile Include="src\Ui\UiUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\App\App.h" />
@@ -30,6 +33,9 @@
     <ClInclude Include="src\Core\Difficulty.h" />
     <ClInclude Include="src\Ui\BoardUI.h" />
     <ClInclude Include="src\Ui\MainFrame.h" />
+    <ClInclude Include="src\Ui\UiEvents.h" />
+    <ClInclude Include="src\Ui\UiLayout.h" />
+    <ClInclude Include="src\Ui\UiUtil.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

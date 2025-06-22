@@ -18,12 +18,10 @@ public:
      */
     MainFrame();
     
-
     int rows = 9;
     int cols = 9;
     int mines = 10;
 
-private:
     void ResetUI();
     
     /**
